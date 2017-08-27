@@ -1,2 +1,3 @@
 # moodle-assign-scripts
-Send assignment files and grades to Moodle (even when webservice api is not enabled)
+
+Suppose your students do assignments outside Moodle. These scripts allow to send the assignment files and grades to Moodle so that the students can only see their own assignments.
