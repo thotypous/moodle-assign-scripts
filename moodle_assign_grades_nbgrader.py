@@ -10,17 +10,12 @@ FORMAT_HTML = 1
 FORMAT_PLAIN = 2
 
 base_url = 'https://ava.ead.ufscar.br'
-assignment_file_templ = '{}.pdf'
+assignment_file_templ = '{}.html'
 comment_format = FORMAT_PLAIN
 
 moodle_session = sys.argv[1]
 assign_id = int(sys.argv[2])
 students_moodle_csv = csv.reader(open(sys.argv[3]), delimiter=';')
-
-grades = {}
-if len(sys.argv) > 4:
-    for row in csv.reader(open(sys.argv[4]), delimiter=';'):
-        grades[row[0]] = row[1]
 
 students = {}
 for sid, moodle_sid, name in students_moodle_csv:
@@ -66,8 +61,13 @@ for rownum in itertools.count(start=0):
 
     file_info = {}
     assignment_file = assignment_file_templ.format(sid)
+    grade = ''
     if os.path.exists(assignment_file):
-        print('-> %s' % assignment_file)
+        with open(assignment_file, 'r', encoding='utf-8') as f:
+            m = re.search(r'<h4>[^<]+ \(Score: ([^ ]+)', f.read())
+            if m:
+                grade = m.group(1).replace('.', ',')
+        print('-> %s (%s)' % (assignment_file, grade))
         with open(assignment_file, 'rb') as f:
             upload_params = params.copy()
             upload_params.update({
@@ -92,7 +92,7 @@ for rownum in itertools.count(start=0):
         'rownum': rownum,
         'assignfeedbackcomments_editor[text]': '',
         'assignfeedbackcomments_editor[format]': comment_format,
-        'grade': grades.get(sid, ''),
+        'grade': grade,
     })
     grade_params['_qf__mod_assign_grade_form_%d' % rownum] = 1
     if 'id' in file_info:
