@@ -6,7 +6,13 @@ score_config = sys.argv[1].strip().split()
 
 writer = csv.writer(sys.stdout, delimiter=';')
 
-for row in csv.DictReader(sys.stdin):
+for row in csv.DictReader(sys.stdin, delimiter=','):
+    comments = ''
+    for quest, col in row.items():
+        if ';' in col:
+            row[quest], comment = col.split(';', 2)
+            comments += '%s: %s.' % (quest, comment)
+
     stack = []
     for op in score_config:
         if op.startswith('<'):
@@ -20,5 +26,6 @@ for row in csv.DictReader(sys.stdin):
         else:
             stack.append(float(op))
     assert(len(stack) == 1)
+
     grade = ('%.2f' % stack[0]).replace('.', ',')
-    writer.writerow([row['questionnaire_id'], grade])
+    writer.writerow([row['questionnaire_id'], grade, comments])

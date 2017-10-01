@@ -18,9 +18,11 @@ assign_id = int(sys.argv[2])
 students_moodle_csv = csv.reader(open(sys.argv[3]), delimiter=';')
 
 grades = {}
+comments = {}
 if len(sys.argv) > 4:
     for row in csv.reader(open(sys.argv[4]), delimiter=';'):
         grades[row[0]] = row[1]
+        comments[row[0]] = row[2]
 
 students = {}
 for sid, moodle_sid, name in students_moodle_csv:
@@ -90,7 +92,7 @@ for rownum in itertools.count(start=0):
         'savegrade': 'Save',
         'id': assign_id,
         'rownum': rownum,
-        'assignfeedbackcomments_editor[text]': '',
+        'assignfeedbackcomments_editor[text]': comments.get(sid, ''),
         'assignfeedbackcomments_editor[format]': comment_format,
         'grade': grades.get(sid, ''),
     })
