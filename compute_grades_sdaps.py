@@ -11,7 +11,8 @@ for row in csv.DictReader(sys.stdin, delimiter=','):
     for quest, col in row.items():
         if ';' in col:
             row[quest], comment = col.split(';', 2)
-            comments += '%s: %s.' % (quest, comment)
+            comments += '[%s]: %s.\n\n' % (quest, comment)
+    comments = comments.strip()
 
     stack = []
     for op in score_config:
